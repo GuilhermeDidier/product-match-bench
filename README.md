@@ -2,7 +2,7 @@
 
 A small, end-to-end prototype of hybrid retrieval with LLM extraction on Postgres + pgvector, where every layer is scored against ground truth.
 
-**Report:** see `site/index.html` (or the deployed link), built from the JSON files in `results/`.
+**Report:** https://product-match-bench.vercel.app — built from the JSON files in `results/` by `report/build.py`.
 
 ```
 supplier sheet (电池容量: 2.6Ah, 插头: 欧规, 起订量: 1万个 …)
