@@ -1,0 +1,8 @@
+anthropic>=0.94
+sentence-transformers>=6.1
+torch>=2.14
+jieba>=0.42
+psycopg[binary]>=3.2
+pgvector>=0.4
+numpy
+pytest
