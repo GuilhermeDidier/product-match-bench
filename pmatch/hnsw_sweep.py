@@ -36,7 +36,7 @@ def corpus(n, rng):
     return items
 
 
-def timed_knn(conn, sql, params, reps=1):
+def timed_knn(conn, sql, params):
     t0 = time.perf_counter()
     rows = conn.execute(sql, params).fetchall()
     return rows, (time.perf_counter() - t0) * 1000

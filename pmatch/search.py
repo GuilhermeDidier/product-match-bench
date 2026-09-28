@@ -74,17 +74,24 @@ class Searcher:
             self._reranker = CrossEncoder(RERANK_MODEL, device="mps", max_length=512)
         return self._reranker
 
-    def _params(self, query, field, k):
-        return {"terms": tokenize(query), "field": field, "k": k, "k1": K1, "b": B,
-                "qvec": embed([query], "query")[0], "rrf_k": RRF_K}
+    def _params(self, query, field, k, lexical=True, semantic=True):
+        # only compute what the SQL uses: embedding the query is most of BM25's latency otherwise
+        p = {"field": field, "k": k}
+        if lexical:
+            p.update(terms=tokenize(query), k1=K1, b=B)
+        if semantic:
+            p["qvec"] = embed([query], "query")[0]
+        if lexical and semantic:
+            p["rrf_k"] = RRF_K
+        return p
 
     def bm25(self, query, field="raw", k=50):
-        rows = self.conn.execute(BM25_SQL, self._params(query, field, k)).fetchall()
+        rows = self.conn.execute(BM25_SQL, self._params(query, field, k, semantic=False)).fetchall()
         return [r[0] for r in rows]
 
     def dense(self, query, field="raw", k=50):
         sql = DENSE_SQL.format(emb=EMB_COLUMNS[field])
-        return [r[0] for r in self.conn.execute(sql, self._params(query, field, k)).fetchall()]
+        return [r[0] for r in self.conn.execute(sql, self._params(query, field, k, lexical=False)).fetchall()]
 
     def hybrid(self, query, field="raw", k=50):
         sql = HYBRID_SQL.format(bm25=BM25_SQL, emb=EMB_COLUMNS[field])

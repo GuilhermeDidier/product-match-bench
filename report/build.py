@@ -32,6 +32,11 @@ def f3(x):
     return f"{x:.3f}"
 
 
+def ms(x):
+    # sub-10 ms latencies keep one decimal, or BM25 would read as "0"
+    return f"{x:.1f}" if x < 10 else f"{x:.0f}"
+
+
 # ---------------------------------------------------------------- charts --
 
 def reliability_svg(bins):
@@ -118,7 +123,7 @@ def main():
                     f"<td class='num'>{f3(v['recall@50'])}</td><td class='num'>{f3(v['p@1'])}</td>"
                     f"<td class='num'>{f3(v['mrr'])}</td><td class='num nd'>{f3(v['ndcg@10'])}{bar(v['ndcg@10'])}</td>"
                     f"<td class='num'>{f3(v['ndcg@10_en'])}</td><td class='num'>{f3(v['ndcg@10_zh'])}</td>"
-                    f"<td class='num'>{f3(v['misorder'])}</td><td class='num'>{v['p50_ms']:.0f}</td></tr>")
+                    f"<td class='num'>{f3(v['misorder'])}</td><td class='num'>{ms(v['p50_ms'])}</td></tr>")
     ablation = "\n".join(rows)
 
     # examples

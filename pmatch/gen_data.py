@@ -8,8 +8,10 @@ few genuinely ambiguous headers. Because we generate it, we know the true
 canonical value of every row, which is what makes the evaluation honest.
 
 Products come in families: an anchor, 1-2 exact duplicates from other
-suppliers (true matches) and 2-3 near-misses that differ in exactly one
-attribute the query asks for (hard negatives).
+suppliers (true matches) and 2-3 variants with one query attribute changed.
+Changing a battery's chemistry also changes its voltage, so not every variant
+is a near-miss. Hard negatives are computed afterwards, over the whole
+catalog: products that match the query on every constrained attribute but one.
 """
 
 import json
@@ -100,7 +102,7 @@ def sample_spec(cat, rng):
 
 
 def mutate(cat, spec, field, rng):
-    """Copy of spec with exactly one query field changed."""
+    """Copy of spec with `field` changed (for battery chemistry, voltage changes with it)."""
     s = json.loads(json.dumps(spec))
     while True:
         alt = sample_spec(cat, rng)

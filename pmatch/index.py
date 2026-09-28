@@ -49,11 +49,14 @@ def main():
 
     rows = []
     for p in products:
-        attrs = extractions[p["id"]]["attributes"]
+        ext = extractions[p["id"]]
+        attrs = ext["attributes"]
         raw = raw_text(p)
         rows.append({
-            "id": p["id"], "category": p["category"], "title": p["title"], "raw": raw,
-            "norm": raw + "\n" + canonical_text(p["category"], attrs),
+            # the extracted pipeline sees only what the model extracted, category included;
+            # ground truth feeds the oracle text and nothing else
+            "id": p["id"], "category": ext["mapping"]["category"], "title": p["title"], "raw": raw,
+            "norm": raw + "\n" + canonical_text(ext["mapping"]["category"], attrs),
             "oracle": raw + "\n" + canonical_text(p["category"], p["truth"]),
             "attrs": attrs,
         })

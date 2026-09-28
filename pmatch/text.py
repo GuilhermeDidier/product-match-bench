@@ -25,6 +25,9 @@ STOP = {"的", "和", "与", "及", "通用", "a", "an", "the", "for", "with", "
 def tokenize(text):
     s = unicodedata.normalize("NFKC", text).lower()
     s = s.replace("°c", "c").replace("℃", "c")
+    # "dc12v" / "ac100~240v": split the current-type prefix off, or WORD would
+    # swallow the number and "12v" would never match
+    s = re.sub(r"(?<![a-z])(dc|ac)(?=\d)", r"\1 ", s)
     tokens = []
     for chunk in re.split(r"[\s,;:/()（）\[\]|、，：]+", s):
         if not chunk:

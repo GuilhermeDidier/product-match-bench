@@ -20,22 +20,22 @@ supplier sheet (电池容量: 2.6Ah, 插头: 欧规, 起订量: 1万个 …)
 
 | Candidate generation | Indexed text | Recall@50 | P@1 | nDCG@10 | Misorder ↓ |
 |---|---|---:|---:|---:|---:|
-| BM25 | raw sheet | 0.904 | 0.375 | 0.402 | 0.287 |
+| BM25 | raw sheet | 0.917 | 0.394 | 0.422 | 0.288 |
 | Dense (HNSW) | raw sheet | 0.908 | 0.337 | 0.375 | 0.313 |
-| Hybrid RRF | raw sheet | 0.941 | 0.327 | 0.402 | 0.279 |
-| Hybrid RRF + rerank | raw sheet | 0.941 | 0.875 | 0.793 | 0.158 |
-| **BM25** | **sheet + extracted attrs** | 0.981 | **0.962** | **0.940** | 0.049 |
+| Hybrid RRF | raw sheet | 0.940 | 0.337 | 0.405 | 0.279 |
+| Hybrid RRF + rerank | raw sheet | 0.940 | 0.875 | 0.803 | 0.154 |
+| **BM25** | **sheet + extracted attrs** | 0.981 | **0.971** | **0.945** | **0.046** |
 | Dense (HNSW) | sheet + extracted attrs | 0.959 | 0.423 | 0.477 | 0.269 |
-| Hybrid RRF | sheet + extracted attrs | **0.993** | 0.683 | 0.725 | 0.169 |
-| **Hybrid RRF + rerank** | **sheet + extracted attrs** | **0.993** | 0.923 | 0.934 | **0.047** |
-| *Hybrid RRF + rerank* | *sheet + ground-truth attrs (upper bound)* | *0.993* | *0.933* | *0.941* | *0.044* |
+| Hybrid RRF | sheet + extracted attrs | **0.993** | 0.663 | 0.726 | 0.167 |
+| **Hybrid RRF + rerank** | **sheet + extracted attrs** | **0.993** | 0.923 | 0.934 | **0.046** |
+| *Hybrid RRF + rerank* | *sheet + ground-truth attrs (upper bound)* | *0.993* | *0.933* | *0.941* | *0.043* |
 
 *Misorder* is the share of (true match, near-miss) pairs where the near-miss ranks higher.
 
 What the table says:
 
-- **Extraction is the biggest lever.** Indexing the normalized attributes next to the raw sheet takes BM25 from 0.402 to 0.940 nDCG@10. The extracted pipeline lands within 0.007 of the ground-truth upper bound.
-- **Equal-weight RRF hurt ranking on this query set.** Dense retrieval adds recall (0.981 → 0.993), but it is weak on exact specs, and fusing it at equal weight drops nDCG to 0.725. Hybrid has to be measured per query type, not assumed.
+- **Extraction is the biggest lever.** Indexing the normalized attributes next to the raw sheet takes BM25 from 0.422 to 0.945 nDCG@10. The extracted pipeline lands within 0.007 of the ground-truth upper bound.
+- **Equal-weight RRF hurt ranking on this query set.** Dense retrieval adds recall (0.981 → 0.993), but it is weak on exact specs, and fusing it at equal weight drops nDCG to 0.726. Hybrid has to be measured per query type, not assumed.
 - **The cross-encoder makes fusion worth it.** It restores the ranking and keeps the extra recall. It also costs ~1 s per query on an M4 (MPS), which is the next thing to optimize (smaller reranker, GPU, or rerank only when the lexical and dense lists disagree).
 
 **Extraction** (4,594 header rows, Claude with strict JSON schema output): 100% of unambiguous headers mapped correctly. Of the 128 deliberately ambiguous ones (电流, 电压), 80% were mapped correctly, 20% were abstained on and 0% were wrong. 99.3% of canonical values came out correct after normalization; the misses are the abstentions. ECE 0.053: the model is under-confident, never over-confident, on this set.

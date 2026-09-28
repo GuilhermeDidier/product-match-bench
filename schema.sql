@@ -8,7 +8,7 @@ drop table if exists bm25_postings, bm25_docs, products cascade;
 
 create table products (
     id          text primary key,
-    category    text not null,
+    category    text not null,          -- as extracted by the LLM
     title       text not null,
     raw_text    text not null,          -- the sheet as the supplier wrote it
     norm_text   text not null,          -- raw_text + canonical attributes (from the LLM mapping)
@@ -19,7 +19,8 @@ create table products (
     emb_oracle  vector(384) not null
 );
 
--- Structured filters ("EU plug, 12 V") hit attrs directly.
+-- For structured filters ("EU plug, 12 V") on attrs. The retrieval eval doesn't
+-- parse queries into filters yet; the filtered-search experiment is in hnsw_sweep.py.
 create index products_attrs_gin on products using gin (attrs jsonb_path_ops);
 create index products_category on products (category);
 
