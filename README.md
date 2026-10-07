@@ -1,5 +1,7 @@
 # Product matching over Chinese supplier sheets
 
+[![CI](https://github.com/GuilhermeDidier/product-match-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/GuilhermeDidier/product-match-bench/actions/workflows/ci.yml)
+
 A small, end-to-end prototype of hybrid retrieval with LLM extraction on Postgres + pgvector, where every layer is scored against ground truth.
 
 **Report:** https://product-match-bench.vercel.app — built from the JSON files in `results/` by `report/build.py`.

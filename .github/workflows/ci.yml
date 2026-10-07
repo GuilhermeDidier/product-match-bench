@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests:
+    name: Tokenizer + normalizer tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # Only what these tests import: no torch, no models, no database.
+      - name: Install dependencies
+        run: pip install jieba numpy pytest
+
+      # tests/test_bm25_sql.py needs the built index (LLM extraction + embeddings
+      # in Postgres), so it runs locally against the database, not here.
+      - name: Tests
+        run: python -m pytest -q tests/test_normalize.py tests/test_text.py
